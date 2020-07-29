@@ -9,6 +9,7 @@ library(learnr)
 library(mosaic)
 library(vegan)
 library(ggvegan)
+dune <- read.csv("www/dune.csv", row.names=1)
 knitr::opts_chunk$set(echo = FALSE)
 ```
 
@@ -105,3 +106,88 @@ variables can be incorporated into an ordination: this is known as **constrained
 variables, it is called **unconstrained ordination**. (There are not constrained
 equivalents for classification.) We will start with unconstrained ordination
 methods as these are the simplest to introduce.
+
+## Unconstrained ordination
+The first biologists to struggle with multi-attribute data were ecologists, 
+because of the large numbers of species that they collected in many field surveys.
+As a result, some of the methods will refer to **sites** and **species**, but
+please remember that the 'sites' could just as easily be samples, isolates,
+experimental plants etc., whilst the 'species' could be OTUs, gene sequences etc.
+
+### Column and row names
+For all multi-attribute (also known as multivariate) datasets R expects your
+raw data to have row names, as well as column names. These can be alphnumeric,
+but column names must **not** start with a number. If you save your data from
+Excel in .csv (comma separated value) format, the `read.csv()` function will
+assume that the first column contains row names. You will often want to keep
+row and column names fairly short, so you can display them on the summary graphs
+from your analyses. For example, typically species names are no longer than 8-
+letter codes (4 letters genus, 4 letters species).
+
+### Dune dataset
+We are going to analyse some vegetation data from the Netherlands, which is
+considered a 'classic' dataset and is used in quite a wide range of books.
+
+![](images/dunes.jpeg)
+
+This has been stored in a `data.frame` called `dune`: use the exercise box below to
+get a summary of the data. How many attributes (species) are present? How many
+samples (quadrats)? What seems to be a common number in the data?
+
+```{r dune_summary, exercise=TRUE}
+
+```
+```{r dune_summary-solution}
+summary(dune)
+head(dune)
+nrow(dune)
+ncol(dune)
+rownames(dune)
+colnames(dune)
+```
+
+You can see that the column names (attributes) are species, for example "Achimill" is
+*Achillea millefolium* :
+
+![](images/achillea.jpeg)
+The rownames can be numbers, which can be useful for graphical display. The dataset
+contains 20 quadrats from `nrow()` and 30 species from `ncol()`. The values shown
+in the `head()` function is the cover-abundance (measured on a scale of 0 to 10),
+but notice how common the value 0 is in these data. This is quite common, and
+known as a **sparse** dataset.
+
+### The `vegan` package
+We are going to use the `vegan` package for these analyses. It was originally
+developed for vegetation analysis (hence its name), but has since been used in
+a wide range of other disciplines in biology, including landscape analysis,
+molecular biology etc. If looking for information on Google about the package,
+remember to add the word 'multivariate' to your search, otherwise it will
+return rather a lot of recipes for food!
+
+### Different types of unconstrained ordination
+There are several types of unconstrained ordination, and we will restrict
+ourselves to three, that you might encounter in your Stage 3 projects.
+
+* principal components analysis (PCA) - a linear method
+* correspondence analysis (CA) - a unimodal method
+* non-metric multidimensional scaling (NMDS) - ranked similarity method
+
+Linear methods such as PCA assume a relatively constant increase or decrease
+in your attribute across your samples. So if some of your samples had low soil
+pH, and some high pH, the abundance of an individual species might increase or
+decline in roughly a straight line. If the analysis works well, the PCA will
+create new variables that 'capture' most of this change:
+
+![](images/linear.png)
+
+Unimodal methods such as CA assume that the abundance of an attribute can rise
+and fall along the axis. Where data are 'sparse' this can sometimes be more
+realistic for the analysis:
+
+![](images/unimodal.png)
+
+NMDS uses a quite different approach. It ranks the abundance values of your
+attributes (species, OTUs etc) and calculates pairwise similarities. It then
+tries to simplify these sets of similarities between all the original variables
+into 2 new variables for easy visualisation. It can be useful when the original
+data are extremely messy and difficult to interpret by PCA or CA.
