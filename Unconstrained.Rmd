@@ -1,0 +1,107 @@
+---
+title: "Multiple response variables"
+output: learnr::tutorial
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+library(mosaic)
+library(vegan)
+library(ggvegan)
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+
+## Introduction
+
+### Where might we have multiple responses?
+All the examples we have looked at so far have only had one response variable, 
+with one or more explanatory variables. However, there can be numerous examples
+where you collect lots of response variables. Examples include:
+
+* plant species x vegetation quadrats
+* gene sequence x isolate number
+* invertebrate species x pitfall traps
+* bacterial operational taxonomic units (OTUs) x sample
+* benthic species x marine samples
+
+These data will normally be recorded as tables, where each column is an
+**attribute**, and each row is a **sample**. Therefore in the above examples,
+the attributes are species, gene sequences and OTUs, whilst the samples are
+quadrats, isolates, pitfall traps etc. Often these tables of data can be quite
+large, for example a typical invertebrate survey can easily record 50 or 100
+species within one family, whilst genetic studies can produce hundreds of
+sequences. Therefore the resulting tables can produce large numbers of columns
+for the attributes, as well as the rows for samples.
+
+```{r why_multivariate}
+question("Why would it be wrong to do lots of linear models, or GLMs, on these
+         types of data?",
+         answer("It would take too long", message = "In R you can automate 
+                analyses so the time taken is not a problem."),
+         answer("There might be more attributes than samples", message = "This
+                might or might not be true, but is not the key issue as it does
+                not affect a linear model or GLM"),
+         answer("The attributes are not independent of each other, and multiple
+                linear models might give misleading p-values", correct = TRUE,
+                message = "Good. The attributes may well be correlated with
+                each other, whilst doing lots of individual statistical tests
+                is likely to result in something being significant eventually
+                since p=0.05 is merely 1 in 20."),
+         allow_retry = TRUE
+         )
+```
+
+### Summarising your data
+When you have lots of response variables, you want to have an easy method to
+summarise your data, to help you interpret them. You might want answers to
+questions such as:
+
+* Which species of plants most frequently co-occur?
+* Which isolates are most similar in terms of their genetic composition?
+* Which bacterial genes are associated with antibiotic resistance?
+* Which quadrats have few species in common?
+
+In the past scientists used simple metrics to try and understand these types of
+datasets. For example, species richness, which is the number of species that
+occur in a sample. However, you can quickly see that you could have two samples
+with the same number of species, but few, or even no species in common. More
+sophisticated techniques calculate **diversity indices** such as Shannon diversity
+and Simpson diversity. These measure both the number of species (or genes, or OTUs)
+and their frequency in the sample. However, again they ignore the **identity**
+of these individual attributes:
+
+* you might have two quadrats with the same Shannon diversity but few species
+in common
+* you might have two isolates with similar Simpson diversity, but little overlap
+in the gene sequences
+
+### Displaying similarities between attributes and samples
+A better approach is to use methods that **summarise the composition** of your
+samples. By composition, we are referring to the number of species, their relative
+abundance, and the taxonomic identity of those present in each sample. Likewise
+if your sample is an isolate with gene frequencies, or OTUs etc. We can then
+measure the **similarity in their composition** to make it easy to compare samples
+or isolates.
+
+This similarity in composition between samples can be measured on a:
+
+* **continuous scale**, so that samples with similar composition are placed
+close together, and very dissimilar samples placed far apart.
+* **categorical scale**, so samples with similar composition are placed into 
+different groups, classes or categories
+
+When we measure composition on a continuous scale it is referred to as **ordination**
+and when we do it on a categorical scale it is known as **classification** or
+**clustering**. The two approaches can be considered complementary.
+
+### What about the explanatory variables?
+These can be used to help you interpret the results of your ordination or
+classification, so that you have a proper biological understanding of what is
+taking place. There are several ways of using explanatory variables. The explanatory
+variables can be incorporated into an ordination: this is known as **constrained ordination**
+. Where the ordination is more descriptive, and does not include explanatory 
+variables, it is called **unconstrained ordination**. (There are not constrained
+equivalents for classification.) We will start with unconstrained ordination
+methods as these are the simplest to introduce.
