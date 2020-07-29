@@ -11,6 +11,7 @@ library(vegan)
 library(ggvegan)
 dune <- read.csv("www/dune.csv", row.names=1)
 data(dune.env)
+data(varespec)
 knitr::opts_chunk$set(echo = FALSE)
 ```
 
@@ -394,3 +395,129 @@ your raw data into one or two new variables.
 * Samples close together on these axes will tend to have similar attributes
 * It is up to you to try and understand what these axes represent by interpreting
 them in relation to environmental data or laboratory experimental treatments.
+
+
+## CA and NMDS
+### What can go wrong with PCA?
+Sometimes the characteristics of your original data can cause problems for PCA,
+for example nearly all the samples squashed to one side of the plot, with a couple
+at the other extreme. This can arise when there are a couple of 'outlier' samples
+with an unusual composition of attributes. Sometimes this can be corrected by
+standardising your data before analysis:
+
+`mydata_std <- decostand(mydata_raw, method="standardize")`
+
+which standardises all the attributes to have zero mean and unit (1.0) standard
+deviation. Other standardisation methods are available in the `decostand()`
+function, and the `"hellinger"` option can also be quite useful. See `?decostand`
+for the help pages.
+
+Another problem is more subtle, and is known as the **arch** or **horseshoe**
+effect. It seems to be a particular problem for both ecological and gene sequencing
+data. This is when the differences in the composition of the samples is so extreme
+that PCA starts to pull the ends of the ordination together, forming an arch. Often
+**unimodal methods** (see earlier) such as CA or NMDS can correct this problem.
+
+### Arch effect example
+The following exercise uses data from Vare *et al* (1995) who studied the effects
+of reindeer grazing in Scandinavia on the vegetation in pine forests.
+
+![](images/reindeer.jpg)
+
+The data consist of cover estimates of 44 species of plants (attributes, in columns)
+at 24 survey sites. You can read the study <a href="www/JVG1995.pdf" target="_blank">here</a>
+If you look at the paper you'll notice that they used NMDS to analyse their data.
+What goes wrong with PCA? Try it now, in the exercise box below; the data are
+stored in the data.frame `varespec`:
+
+```{r arch_effect, exercise=TRUE}
+
+```
+```{r arch_effect-solution}
+# Create the PCA
+varespec_pca <- rda(varespec)
+
+# Check variation explained; if using RStudio just enter summary(varespec_pca)
+summary(varespec_pca)[["cont"]][["importance"]]
+
+# Plot PC1 and PC2 of the samples
+autoplot(varespec_pca, display="sites", legend.position="none", geom="text") 
+
+# Plot PC1 and PC2 of the species
+autoplot(varespec_pca, display="species", legend.position="none", arrows=FALSE) 
+```
+
+You can see that the amount of variation explained by PC1 and PC2 is high, at
+53.8% and 25.4%, so together they explain almost 80% of the variation. This very
+high explained variation on just a couple of axes is sometimes the cause of an
+arch effect, which you can clearly see in the resultant ordination plot. Notice 
+too that in the species plot, nearly all of them are squashed together at the
+centre, with just 4 outlier species. **Note** in the solution to the code above
+I have added `geom="text"` to force display as text rather than simply points.
+
+### Correspondence analysis (CA)
+Let's repeat the analysis using correspondence analysis, which assumes a **unimodal**
+relationship of the attributes (here these are species) and the derived ordination
+axes. To undertake a correspondence analysis, use the `cca()` function instead of
+the `rda()` function. When `cca()` is called without any explanatory variables it
+defaults to correspondence analysis.
+
+```{r ca, exercise=TRUE}
+
+```
+```{r ca-solution}
+# Create the CA
+varespec_ca <- cca(varespec)
+
+# Check variation explained; if using RStudio just enter summary(varespec_pca)
+summary(varespec_ca)[["cont"]][["importance"]]
+
+# Plot CA1 and CA2 of the samples
+autoplot(varespec_ca, display="sites", legend.position="none", geom="text") 
+
+# Plot CA1 and CA2 of the species
+autoplot(varespec_ca, display="species", legend.position="none", arrows=FALSE, geom="text") 
+```
+
+The total amount of variation explained by the first two axes is much less, at
+25.2% and 17.1% respectively for CA1 and CA2, explaining 42.2% in total (see the
+lines labelled `Proportion Explained` and `Cumulative Proportion`). However, the
+graphs for both the sites and species are much easier to understand, and the arch
+effect has been removed.
+
+### Non-metric multidimensional scaling (NMDS)
+Recall that NMDS uses a somewhat different approach to creating the ordination,
+as it is concerned with the relative rankings of your sites along each axis, rather
+than absolute multi-dimensional distances. It determines these rankings from
+pairwise similarity scores between each pair of samples in turn, and analysing
+the resultant table (which is triangular, rather like the distances between cities
+tables you sometimes find in road atlases). The `metaMDS()` function by default
+uses the **Bray-Curtis** similarity measure which is robust for most data. The
+algorithm has to run multiple times to find the best solution. If needed, it
+will automatically standardise your data by either square-root and/or 'Wisconsin'
+standardisation. You may see this displayed in the output as the model runs.
+
+**Note**
+
+* Use the `print()` rather than `summary()` function to look at the output.
+* NMDS does not provide you with % variation explained on each axis. Instead it
+provides an overall "stress" level, where the lower the stress, the better.
+* in the `autoplot` code, to obtain separate sites and species plots, replace
+`display="sites"` with `layers="sites"`.
+
+
+```{r metaNMDS, exercise=TRUE}
+# Create the NMDS
+varespec_nmds <- metaMDS(varespec)
+
+# Check the output
+print(varespec_nmds)
+
+# Plot the NMDS sample (site) and attribute (species) scores
+autoplot(varespec_nmds, layers="sites", legend.position = "none", geom="text")
+autoplot(varespec_nmds, layers="species", legend.position = "none", geom="text")
+```
+
+NMDS is considered to be the most robust unconstrained ordination method for
+many biologists. See the paper by Minchin (1987) <a href="www/Minchin.pdf" target="_blank">here</a>  The `metaMDS()` function
+combines all of Minchin's recommendations into a single command.
