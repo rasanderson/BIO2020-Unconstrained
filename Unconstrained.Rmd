@@ -10,6 +10,7 @@ library(mosaic)
 library(vegan)
 library(ggvegan)
 dune <- read.csv("www/dune.csv", row.names=1)
+data(dune.env)
 knitr::opts_chunk$set(echo = FALSE)
 ```
 
@@ -288,3 +289,108 @@ question("Study the PCA plots for sites and species, and tick the true answers",
          )
 ```
 
+Hopefully you can see that species close together in the ordination graphs
+tend to co-occur, and are found mainly in the quadrats in that part of the graph.
+In PCA plots you will often get a mass of overlapping species in the centre of
+the plot, along the zero-zero lines: these tend to be fairly widespread and
+ubiquitous species, not characteristic of any particular sites.
+
+## Relate PCA to explanatory variables
+### What do the PCA axes mean?
+For most people (myself included!) one of the confusing things about PCA and
+other ordination techniques is that the PCA axes do not have any units, and
+you are left wondering what they really 'mean'. In essence, that is up to you to
+find out, by trying to relate them to potential explanatory data. Typically you
+only need to look at the first ordination axis (PC1) as this captures most of
+the variation, but rarely you may want to look at PC2 as well.
+
+### Environmental data for the sand dune vegetation
+We have some environmental data for the sand dune survey stored in a `data.frame`
+called `dune.env`. Examine the data in the box below:
+
+```{r check_env, exercise=TRUE}
+
+```
+```{r check_env-solution}
+summary(dune.env)
+head(dune.env)
+nrow(dune.env)
+ncol(dune.env)
+```
+
+Notice that the `dune.env` dataset has the same number of rows as `dune`, i.e.
+one entry for each quadrat sample. It does not need to have the same number
+of columns. The particular variables in the `dune.env` dataset are:
+
+* A1 = thickness of soil A1 horizon
+* Moisture = ordered factor 1, 2, 4, 5
+* Management = factor where BF (biological farming), HF (hobby farming), NM (nature
+conservation management), SF (standard farm management)
+* Use = ordered factor with levels Hayfield < Haypastu < Pasture
+* Manure = ordered factor 0 to 4
+
+Let's look at the relationship between Moisture and the PC1 scores. You can
+extract the scores from your `dune_pca` object using the `scores()` function, so
+to get the site (quadrat or sample) scores, use `scores(dune_pca, display="sites", choice=1)`.
+The `choice=1` indicates to just extract the PC1 scores. Use this command, storing
+the results in `dune_pc1` and create a boxplot against `Moisture` using `gf_boxplot()`:
+
+```{r dune_moisture_boxplot-setup}
+dune_pca <- rda(dune)
+```
+```{r dune_moisture_boxplot, exercise=TRUE}
+
+```
+```{r dune_moisture_boxplot-solution}
+# Extract the PC1 site scores
+dune_pc1 <- scores(dune_pca, display="sites", choices = 1)
+
+# Create boxplot
+gf_boxplot(dune_pc1 ~ Moisture, data=dune.env)
+```
+
+So, you can conclude that when PC1 is **high** the soil moisture content is also
+relatively **high**. Now go back to your plot of the species on PC1 and PC2.
+
+```{r which_spp_like_moisture}
+question("Which species are particularly associated with wetter soils?",
+         answer("Lolium perenne (Lolipere)"),
+         answer("Poa trivialis (Poatriv)"),
+         answer("Poa pratense (Poaprat)"),
+         answer("Elymus repens (Elymrepe)"),
+         answer("Plantago lanceolata (Planlanc)"),
+         answer("Eleocharis palustris (Eleopalu)", correct = TRUE),
+         answer("Agrostis stolonifera (Agrostol)", correct = TRUE),
+         random_answer_order = TRUE
+        )
+```
+
+In the same way that you have produced a graph for your Moisture, investigate
+the other environmental variables against PC1. Remember, depth of the soil A1
+horizon is continuous, therefore `gf_point()` is a more appropriate function.
+
+```{r check_other_variables-setup}
+dune_pca <- rda(dune)
+dune_pc1 <- scores(dune_pca, display="sites", choices=1)
+```
+```{r check_other_variables, exercise=TRUE}
+
+```
+```{r check_other_variables-solution}
+gf_point(dune_pc1 ~ A1, data=dune.env)
+gf_boxplot(dune_pc1 ~ Management, data=dune.env)
+gf_boxplot(dune_pc1 ~ Use, data=dune.env)
+gf_boxplot(dune_pc1 ~ Manure, data=dune.env)
+```
+
+Which variables seem to have little relationship with PC1, which ones appear to
+go in different directions. If you have time, try and extract PC2 scores and see
+how they relate to the environment.
+
+**Key points**
+
+* Ordination methods provide a convenient way of summarising as much variation in
+your raw data into one or two new variables.
+* Samples close together on these axes will tend to have similar attributes
+* It is up to you to try and understand what these axes represent by interpreting
+them in relation to environmental data or laboratory experimental treatments.
