@@ -239,7 +239,7 @@ the practicals) but has been pre-installed for this website.
 The following code displays the species scores and site scores. Remember that
 depending on your experimental data, these might be OTUs and isolates respectively.
 The `autoplot()` function by default puts both sites and species on the same
-graph, but this can be difficult to interpret, hence the use of the `display=`
+graph, but this can be difficult to interpret, hence the use of the `layers=`
 option. By default it displays sites as points, and species with arrows, but as
 the site names (rownames in the original data) are simply numbers, and the
 arrows can be confusing, I have set the relevant options with `geom` and `arrows`
@@ -253,12 +253,12 @@ Type ``?ggvegan::autoplot`` to see the full range of options.
 autoplot(dune_pca, geom="text", arrows = FALSE)
 
 # Display quadrat PCA scores for axes 1 and 2
-autoplot(dune_pca, display="sites", geom="text", legend.position = "none") %>% 
+autoplot(dune_pca, layers="sites", geom="text", legend.position = "none") %>% 
   gf_labs(title="PC1 and PC2 of dune data showing quadrat numbers") %>% 
   gf_lims(x = c(-2,2.85), y=c(-2.4, 2.2))
 
 # Display plant species PCA scores for axes 1 and 2
-autoplot(dune_pca, display="species", arrows = FALSE, legend.position = "none") %>% 
+autoplot(dune_pca, layers="species", arrows = FALSE, legend.position = "none") %>% 
   gf_labs(title="PC1 and PC2 of dune data showing species codes") %>% 
   gf_lims(x = c(-2,2.85), y=c(-2.4, 2.2))
 ```
@@ -441,10 +441,10 @@ varespec_pca <- rda(varespec)
 summary(varespec_pca)[["cont"]][["importance"]]
 
 # Plot PC1 and PC2 of the samples
-autoplot(varespec_pca, display="sites", legend.position="none", geom="text") 
+autoplot(varespec_pca, layers="sites", legend.position="none", geom="text") 
 
 # Plot PC1 and PC2 of the species
-autoplot(varespec_pca, display="species", legend.position="none", arrows=FALSE) 
+autoplot(varespec_pca, layers="species", legend.position="none", arrows=FALSE) 
 ```
 
 You can see that the amount of variation explained by PC1 and PC2 is high, at
@@ -473,10 +473,10 @@ varespec_ca <- cca(varespec)
 summary(varespec_ca)[["cont"]][["importance"]]
 
 # Plot CA1 and CA2 of the samples
-autoplot(varespec_ca, display="sites", legend.position="none", geom="text") 
+autoplot(varespec_ca, layers="sites", legend.position="none", geom="text") 
 
 # Plot CA1 and CA2 of the species
-autoplot(varespec_ca, display="species", legend.position="none", arrows=FALSE, geom="text") 
+autoplot(varespec_ca, layers="species", legend.position="none", arrows=FALSE, geom="text") 
 ```
 
 The total amount of variation explained by the first two axes is much less, at
@@ -502,9 +502,6 @@ standardisation. You may see this displayed in the output as the model runs.
 * Use the `print()` rather than `summary()` function to look at the output.
 * NMDS does not provide you with % variation explained on each axis. Instead it
 provides an overall "stress" level, where the lower the stress, the better.
-* in the `autoplot` code, to obtain separate sites and species plots, replace
-`display="sites"` with `layers="sites"`.
-
 
 ```{r metaNMDS, exercise=TRUE}
 # Create the NMDS
