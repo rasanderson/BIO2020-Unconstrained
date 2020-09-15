@@ -261,7 +261,7 @@ ordi_plot(dune_pca, layers="sites", geom="text") %>%
   gf_lims(x = c(-2,2.85), y=c(-2.4, 2.2))
 
 # Display plant species PCA scores for axes 1 and 2
-ordi_plot(dune_pca, layers="species") %>% 
+ordi_plot(dune_pca, layers="species", geom="text") %>% 
   gf_labs(title="PC1 and PC2 of dune data showing species codes") %>% 
   gf_lims(x = c(-2,2.85), y=c(-2.4, 2.2))
 ```
@@ -270,7 +270,8 @@ Note that in the above code, for the two separate plots we've added a title usin
 the `gf_labs()` function, and also set the x- and y-axis limits via `gf_lims()`
 to ensure they are on the same scale. This last step is optional: sometimes it
 is useful to omit. By default, as we have numerous quadrats, these will show as
-points. I've added `geom="text"` to ensure quadrat numbers are displayed.
+points. I've added `geom="text"` to ensure quadrat numbers and species names are
+displayed (other option is to display as `"point"`).
 
 ### Quick interpretation of the plots
 Even from these simple plots you can answer some questions. See if you can work
@@ -304,7 +305,7 @@ When you repeat this exercise in RStudio yourself, you will interactively add
 the labels for the quadrats or species with code such as:
 
 ```
-dune_plt <- ordi_plot(dune_pca, display="species", geom="point")
+dune_plt <- ordi_plot(dune_pca, layers="species", geom="point")
 dune_plt
 ordi_identify(dune_plt)
 ```
@@ -457,10 +458,10 @@ varespec_pca <- ordi_pca(varespec)
 summary(varespec_pca)[["cont"]][["importance"]]
 
 # Plot PC1 and PC2 of the samples
-ordi_plot(varespec_pca, display="sites", geom="text") 
+ordi_plot(varespec_pca, layers="sites", geom="text") 
 
 # Plot PC1 and PC2 of the species
-ordi_plot(varespec_pca, display="species") 
+ordi_plot(varespec_pca, layers="species", geom="text") 
 ```
 
 You can see that the amount of variation explained by PC1 and PC2 is high, at
@@ -470,7 +471,7 @@ arch effect, which you can clearly see in the resultant ordination plot. Notice
 too that in the species plot, nearly all of them are squashed together at the
 centre, with just 4 outlier species. **Note** in the solution to the code above
 I have added `geom="text"` for the sites plot, to force display as text rather
-than simply points. Species plots default to text.
+than simply points, although sometimes species plots default to text.
 
 ### Correspondence analysis (CA)
 Let's repeat the analysis using correspondence analysis, which assumes a **unimodal**
@@ -489,10 +490,10 @@ varespec_ca <- ordi_ca(varespec)
 summary(varespec_ca)[["cont"]][["importance"]]
 
 # Plot CA1 and CA2 of the samples
-ordi_plot(varespec_ca, display="sites", geom="text") 
+ordi_plot(varespec_ca, layers="sites", geom="text") 
 
 # Plot CA1 and CA2 of the species
-ordi_plot(varespec_ca, display="species") 
+ordi_plot(varespec_ca, layers="species", geom="text") 
 ```
 
 The total amount of variation explained by the first two axes is much less, at
@@ -507,7 +508,7 @@ as it is concerned with the relative rankings of your sites along each axis, rat
 than absolute multi-dimensional distances. It determines these rankings from
 pairwise similarity scores between each pair of samples in turn, and analysing
 the resultant table (which is triangular, rather like the distances between cities
-tables you sometimes find in road atlases). The `metaMDS()` function by default
+tables you sometimes find in road atlases). The `ord_nmds()` function by default
 uses the **Bray-Curtis** similarity measure which is robust for most data. The
 algorithm has to run multiple times to find the best solution. If needed, it
 will automatically standardise your data by either square-root and/or 'Wisconsin'
@@ -521,16 +522,17 @@ provides an overall "stress" level, where the lower the stress, the better.
 
 ```{r metaNMDS, exercise=TRUE}
 # Create the NMDS
-varespec_nmds <- metaMDS(varespec)
+varespec_nmds <- ordi_nmds(varespec)
 
 # Check the output
 print(varespec_nmds)
 
 # Plot the NMDS sample (site) and attribute (species) scores
-autoplot(varespec_nmds, layers="sites", legend.position = "none", geom="text")
-autoplot(varespec_nmds, layers="species", legend.position = "none", geom="text")
+ordi_plot(varespec_nmds, layers="sites", geom="text")
+ordi_plot(varespec_nmds, layers="species", geom="text")
 ```
 
 NMDS is considered to be the most robust unconstrained ordination method for
-many biologists. See the paper by Minchin (1987) <a href="www/Minchin.pdf" target="_blank">here</a>  The `metaMDS()` function
-combines all of Minchin's recommendations into a single command.
+many biologists. See the paper by Minchin (1987) <a href="www/Minchin.pdf" target="_blank">here</a>  The `ordi_nmds()` function in the `bio2020` package is
+ a simple wrapper for `vegan` package's `metaNMDS()` function. It combines
+all of Minchin's recommendations into a single command.
