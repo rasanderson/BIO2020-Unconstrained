@@ -8,7 +8,6 @@ runtime: shiny_prerendered
 library(learnr)
 library(mosaic)
 library(vegan)
-library(ggvegan)
 library(bio2020)
 dune <- read.csv("www/dune.csv", row.names=1)
 data(dune.env)
@@ -209,9 +208,6 @@ to study), so for this website I'm going to limit amount of output. When you run
 it interactively in RStudio, you'll have to scroll up a bit to see the next few lines.
 
 
-```{r dune_pca-setup}
-ordi_pca <- rda
-```
 ```{r dune_pca, echo=TRUE}
 # Undertake the PCA ordination
 dune_pca <- ordi_pca(dune)
@@ -238,34 +234,34 @@ so usually you only look at PC1 and PC2.
 PC1 and PC2 are created for both the attributes and samples, and the easiest way
 to study them is via two graphs, that should be interpreted together. You can
 display the results using the default `plot()` command, but the graphs are 
-usually very cluttered and difficult to read. Therefore, we will use the `ggvegan`
-package which has slightly better graphics that are easier to customise. This is
-a "development" package, so is installed differently (this will be explained in
-the practicals) but has been pre-installed for this website.
+usually very cluttered and difficult to read. The `bio2020` package contains an
+`ordi_plot()` function which is easier to use, and broadly similar to the methods
+you have already used for graphs. However, for best results it should be used
+interactively, with the `ordi_identify()` function that I've written for you. This
+can't be demonstrated on this website, so the graphs here will look a bit cluttered.
+When you practice these exercises for yourself, you can use the `ordi_identify()`
+function to obtain nicer graphs.
 
 The following code displays the species scores and site scores. Remember that
 depending on your experimental data, these might be OTUs and isolates respectively.
-The `autoplot()` function by default puts both sites and species on the same
-graph, but this can be difficult to interpret, hence the use of the `layers=`
-option. By default it displays sites as points, and species with arrows, but as
-the site names (rownames in the original data) are simply numbers, and the
-arrows can be confusing, I have set the relevant options with `geom` and `arrows`
-respsectively. If you want to 'fine-tune' your plot, you can "pipe" the commands
-into the usual range of `gf_` functions that you have already used.
-
-Type ``?ggvegan::autoplot`` to see the full range of options.
+The `ordi_plot()` function by default puts both sites and species on the same
+graph, but this can be difficult to interpret, hence the code below also shows
+you how to display the sites and species separately. You can 'fine-tune' your
+plot, by "piping" the commands into the usual range of `gf_` functions that you
+have already used. This can be useful if you want to set titles, or axis limits.
+Setting axis limits can sometimes make it easier to relate species and samples.
 
 ```{r plot_dune, echo=TRUE}
 # Display both on the same plot
-autoplot(dune_pca, geom="text", arrows = FALSE)
+ordi_plot(dune_pca, geom="text")
 
 # Display quadrat PCA scores for axes 1 and 2
-autoplot(dune_pca, layers="sites", geom="text", legend.position = "none") %>% 
-  gf_labs(title="PC1 and PC2 of dune data showing quadrat numbers") %>% 
+ordi_plot(dune_pca, layers="sites", geom="text") %>% 
+  gf_labs(title="PC1 and PC2 of dune data (quadrat numbers)") %>% 
   gf_lims(x = c(-2,2.85), y=c(-2.4, 2.2))
 
 # Display plant species PCA scores for axes 1 and 2
-autoplot(dune_pca, layers="species", arrows = FALSE, legend.position = "none") %>% 
+ordi_plot(dune_pca, layers="species") %>% 
   gf_labs(title="PC1 and PC2 of dune data showing species codes") %>% 
   gf_lims(x = c(-2,2.85), y=c(-2.4, 2.2))
 ```
@@ -273,8 +269,8 @@ autoplot(dune_pca, layers="species", arrows = FALSE, legend.position = "none") %
 Note that in the above code, for the two separate plots we've added a title using
 the `gf_labs()` function, and also set the x- and y-axis limits via `gf_lims()`
 to ensure they are on the same scale. This last step is optional: sometimes it
-is useful to omit. I've also switched off the legend with `legend.position="none"`
-as it's not needed for separate plots.
+is useful to omit. By default, as we have numerous quadrats, these will show as
+points. I've added `geom="text"` to ensure quadrat numbers are displayed.
 
 ### Quick interpretation of the plots
 Even from these simple plots you can answer some questions. See if you can work
@@ -302,6 +298,19 @@ tend to co-occur, and are found mainly in the quadrats in that part of the graph
 In PCA plots you will often get a mass of overlapping species in the centre of
 the plot, along the zero-zero lines: these tend to be fairly widespread and
 ubiquitous species, not characteristic of any particular sites.
+
+**Note**
+When you repeat this exercise in RStudio yourself, you will interactively add
+the labels for the quadrats or species with code such as:
+
+```
+dune_plt <- ordi_plot(dune_pca, display="species", geom="point")
+dune_plt
+ordi_identify(dune_plt)
+```
+The last line with `ordi_identify()` sets your mouse pointer to interactive mode
+to select which points to add a label to.
+
 
 ## Relate PCA to explanatory variables
 ### What do the PCA axes mean?
