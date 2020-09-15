@@ -9,6 +9,7 @@ library(learnr)
 library(mosaic)
 library(vegan)
 library(ggvegan)
+library(bio2020)
 dune <- read.csv("www/dune.csv", row.names=1)
 data(dune.env)
 data(varespec)
@@ -195,19 +196,25 @@ into 2 new variables for easy visualisation. It can be useful when the original
 data are extremely messy and difficult to interpret by PCA or CA.
 
 ## Principal components analysis
-Let's analyse the dune data with PCA. The `vegan` package provides access to the
-`rda()` function, which can be used with only a response variable (in which case
-it defaults to PCA), or with both response and explanatory variables (when it
-automatically uses constrained analysis). Remember that in both cases the "response
-variable" is actually your `data.frame` containing lots of variables. The `summary()`
-function on your ordination output produces lots of output (most of which you do
-not need to study), so for this website I'm going to limit the output. When you
-run it interactively in RStudio, you'll have to scroll up a bit to see the next
-few lines.
+Let's analyse the dune data with PCA. The `vegan` package provides access to many
+advanced multivariate methods. It has the `rda()` function, which when used with
+only a response variable provides PCA, and if used with both response and
+explanatory variables it automatically uses constrained analysis. This can be a 
+little confusing for beginners, so in the `bio2020` I have created a wrapper
+function called `ordi_pca()` to make it clearer when you are using PCA. Remember
+that in both constrained and unconstrained analyses the "response variable" is
+actually your `data.frame` containing lots of variables. The `summary()` function
+on your ordination output produces lots of output (most of which you do not need
+to study), so for this website I'm going to limit amount of output. When you run
+it interactively in RStudio, you'll have to scroll up a bit to see the next few lines.
 
+
+```{r dune_pca-setup}
+ordi_pca <- rda
+```
 ```{r dune_pca, echo=TRUE}
 # Undertake the PCA ordination
-dune_pca <- rda(dune)
+dune_pca <- ordi_pca(dune)
 
 # First part of summary: importance of derived variables
 summary(dune_pca)[["cont"]][["importance"]]
