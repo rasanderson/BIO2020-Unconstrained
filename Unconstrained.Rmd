@@ -451,16 +451,16 @@ stored in the data.frame `varespec`:
 ```
 ```{r arch_effect-solution}
 # Create the PCA
-varespec_pca <- rda(varespec)
+varespec_pca <- ordi_pca(varespec)
 
 # Check variation explained; if using RStudio just enter summary(varespec_pca)
 summary(varespec_pca)[["cont"]][["importance"]]
 
 # Plot PC1 and PC2 of the samples
-autoplot(varespec_pca, layers="sites", legend.position="none", geom="text") 
+ordi_plot(varespec_pca, display="sites", geom="text") 
 
 # Plot PC1 and PC2 of the species
-autoplot(varespec_pca, layers="species", legend.position="none", arrows=FALSE) 
+ordi_plot(varespec_pca, display="species") 
 ```
 
 You can see that the amount of variation explained by PC1 and PC2 is high, at
@@ -469,30 +469,30 @@ high explained variation on just a couple of axes is sometimes the cause of an
 arch effect, which you can clearly see in the resultant ordination plot. Notice 
 too that in the species plot, nearly all of them are squashed together at the
 centre, with just 4 outlier species. **Note** in the solution to the code above
-I have added `geom="text"` to force display as text rather than simply points.
+I have added `geom="text"` for the sites plot, to force display as text rather
+than simply points. Species plots default to text.
 
 ### Correspondence analysis (CA)
 Let's repeat the analysis using correspondence analysis, which assumes a **unimodal**
 relationship of the attributes (here these are species) and the derived ordination
-axes. To undertake a correspondence analysis, use the `cca()` function instead of
-the `rda()` function. When `cca()` is called without any explanatory variables it
-defaults to correspondence analysis.
+axes. To undertake a correspondence analysis, use the `ordi_ca()` function instead
+of the `ordi_pca()` function.
 
 ```{r ca, exercise=TRUE}
 
 ```
 ```{r ca-solution}
 # Create the CA
-varespec_ca <- cca(varespec)
+varespec_ca <- ordi_ca(varespec)
 
 # Check variation explained; if using RStudio just enter summary(varespec_pca)
 summary(varespec_ca)[["cont"]][["importance"]]
 
 # Plot CA1 and CA2 of the samples
-autoplot(varespec_ca, layers="sites", legend.position="none", geom="text") 
+ordi_plot(varespec_ca, display="sites", geom="text") 
 
 # Plot CA1 and CA2 of the species
-autoplot(varespec_ca, layers="species", legend.position="none", arrows=FALSE, geom="text") 
+ordi_plot(varespec_ca, display="species") 
 ```
 
 The total amount of variation explained by the first two axes is much less, at
