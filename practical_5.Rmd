@@ -106,7 +106,7 @@ View(varespec)
 ```
 
 # 1. Principal Components Analysis
-## 1.1 PCA analysis and summary data
+## 1.1 PCA analysis and summary of results
 For the purpose of clarity the wrapper function **ordi_pca()** in the package **bio2020** will be used in this practical. A typical PCA in R has this format: **ordi_pca(data)**
 
 In the [online tutorial](https://naturalandenvironmentalscience.shinyapps.io/Unconstrained/) you saw how the arch or horseshoe effect can be a problem with ecological or gene sequencing data. Although **unimodal methods** are a good alternative, you can implement transformations using the **decostand()** function. Here, we use **scale = TRUE** to give the data **unit variance**, and the **hellinger** transformation, which works well with environmental and species data.
@@ -143,7 +143,7 @@ Output explained:
 
 The lines I find most useful to focus on are the Proportion explained, and Cumulative proportion. PCA tries to "squash" all the original data from 24 dimensions (we have 24 columns or species) into 2 dimensions. Why? You cannot plot a 24 dimensional graph (or if you know how to do so, please apply for a Nobel Prize!). But you can plot a 2 dimensional graph. So if you can squash as much of the 'information' in your original table of data into 2 new variables that summarise your species that makes life easier.
 
-## 1.2 Visual your PCA results
+## 1.2 Visualise your PCA results
 In general we are only interested in PC1 and PC2. Very rarely, there might be useful information in PC3 so you may want to check it, although in my experience it is usually of little value. Generally, the first two axes tend to explain the majority of the variation, so these are usually plotted. We will use the `ordi_plot()` function from the `bio2020` package:
 
 ```{r}
@@ -166,7 +166,13 @@ When this dataset was analysed [initial on the interactive website with PCA](htt
 
 Species that are close together tend to co-occur at particular sites, and sites that are close together have similar species composition. Species that are close to the zero-zero lines are more common across all sites. You will notice that due to clustering it is difficult to make some species/sites, so you can use **ordi_identify()** to pick out the interesting ones.
 
-```{r echo=TRUE, include=TRUE, results = 'hide'}
+After you enter the `ordi_identify()` command you will see the text
+
+`"Click on plot to label points; hit Esc key to exit"`
+
+displayed in the Console:
+
+```{r echo=TRUE, include=TRUE, results = 'hide', eval=FALSE}
 # Create the species plot, but only use points, not text labels
 # store the species plot in varespec_plt
 varespec_plt <- ordi_plot(varespec_pca, layers="species", geom="point")
@@ -199,14 +205,14 @@ gf_point(varespec_pc1 ~ pH, data=varechem)
 Think about how the PC1 scores relate to the environment, and try the same with PC2, or with some of the other soil chemistry variables.
 
 # 2. Correspondence Analysis
-
+## 2.1 CA analysis and summary of results
 The wrapper function **ordi_ca()** in the package **bio2020** will be used in this practical. A typical PCA in R has this format: **ordi_ca(data)**
 
 Correspondence analysis is a weighted form of PCA that can fit non-linear responses. The weighting means the analysis is on the relative composition instead of absolute values. It is similar to PCA in that species that are close together tend to co-occur, and sites that are close together tend to have similar species composition.
 
 ```{r}
-ca <- ordi_ca(dune)
-ca
+dune_ca <- ordi_ca(dune)
+dune_ca
 ```
 
 Output explained (similar to PCA):
@@ -217,8 +223,9 @@ Output explained (similar to PCA):
 - **Eigenvalues** - Measure of the amount of variance that is explained by each of the axes
 
 To see the full output, use **summary()**. Again, this is a large output so it is not shown here.
+
 ```{r echo=TRUE, include=TRUE, results = 'hide'}
-summary(ca)
+summary(dune_ca)
 ```
 
 Output explained (similar to PCA):
@@ -230,14 +237,36 @@ Output explained (similar to PCA):
 - **Cumulative proportion** is the cumulative total of the proportion of each axes. While **CA1** explains 0.2534 and **CA2** explains 0.1892 of the variance, their *cumulative* proportion is 0.4426 because it is the total amount of variance they explain together.
 - **Species and Site scores** - the relative weight each species and/or site has within each axes.
 
-### Visualising
+You can see that whilst PCA and CA differ in their underlying philosophy (linear vs unimodel) the summary of the results of the analyses is similar in interpretation.
+
+## 2.2 Visualise your CA results
+Visualisation is very similar to that for PCA, and is most easily accessed via `ordi_plot()` which is compatible with the plotting system you have already used.
 
 ```{r}
-ordi_plot(ca, layers = "sites", geom = "text")%>% 
+# All the rows (sites or samples)
+ordi_plot(dune_ca, layers = "sites", geom = "text") %>% 
   gf_lims(x = c(-4, 6), y=c(-3, 9))
-ordi_plot(ca, layers = "species", geom = "text")%>% 
+
+# All the columns (species or attributes)
+ordi_plot(dune_ca, layers = "species", geom = "text") %>% 
   gf_lims(x = c(-2, 4), y=c(-2, 6))
 ```
+
+Again, the species or attribute plot can get very cluttered depending on your dataset, so you might find it easier to label individual points using `ordi_identify()`:
+
+```{r echo=TRUE, include=TRUE, results = 'hide'}
+# Create the species plot, but only use points, not text labels
+# store the species plot in dune_plt
+dune_plt <- ordi_plot(dune_ca, layers="species", geom="point")
+
+# Displays the species plot onscreen
+dune_plt
+
+# Use mouse to identify individual species. Hit Esc to exit
+ordi_identify(dune_plt)
+```
+
+If you have time, try plotting CA1 vs CA2 using `axes = c(1,3)` as an option to `ordi_plot()`.
 
 ## Non-metric Multidimensional Scaling 
 
