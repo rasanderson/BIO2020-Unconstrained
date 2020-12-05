@@ -2,10 +2,10 @@
 title: 'Practical 5: Unconstrained Ordination'
 subtitle: "Bio2020 Statistics and experimental design"
 output:
+  html_document: default
+  pdf_document: default
   word_document:
      reference_docx: template.docx
-  pdf_document: default
-  html_document: default
 ---
 
 
@@ -268,8 +268,8 @@ ordi_identify(dune_plt)
 
 If you have time, try plotting CA1 vs CA2 using `axes = c(1,3)` as an option to `ordi_plot()`.
 
-## Non-metric Multidimensional Scaling 
-
+# 3. Non-metric Multidimensional Scaling 
+## 3.1 NMDS background and analysis
 NMDS creates the ordination using the rank order of your sites along each axis, rather than absolute multi-dimensional distances. NMDS only makes sure that the points further apart are still further apart in NMDS space than the “closer together” points, so it does not preserve the actual distance. It determines these rankings from pairwise similarity scores between each pair of samples in turn, and analysing the resultant table. The **ordi_nmds()** function by default uses the Bray-Curtis similarity measure which is robust for most data. The algorithm has to run multiple times to find the best solution. If needed, it will automatically standardise your data by either square-root and/or ‘Wisconsin’ standardisation, which standardises species to equal maxima and sites to equal totals. You may see this displayed in the output as the model runs.
 
 The wrapper function **ordi_nmds()** in the package **bio2020** will be used in this practical. A typical PCA in R has this format: **ordi_nmds(data)**
@@ -300,10 +300,29 @@ Output explained:
 - **Dimensions** - the number of dimensions with the least stress. 
 - **Two convergent solutions found after 20 tries** - the NMDS did 20 random starts and found 2 solutions that were very similar to one another. If you ran the NMDS twice, it would say **...after 40 tries** here.
 
-### Visualising
+## 3.2 Visualise your NMDS results
+Again you can use the `ordi_plot()` function to visualise the results. I usually find it easier to  plot the samples and species separately, and compare the two graphs.
 
 ```{r}
 # Plot the NMDS sample (site) and attribute (species) scores
 ordi_plot(dune_nmds, layers="sites", geom="text")
 ordi_plot(dune_nmds, layers="species", geom="text")
 ```
+
+If you wish to compare two graphs side-by-side, use the `multi_plot()` function from the `bio2020` package (type `?multi_plot` in the Console for help):
+
+```{r}
+# Plot the NMDS sample (site) and attribute (species) scores but this
+# time store the plots
+dune_nmds_sites_plt <- ordi_plot(dune_nmds, layers="sites", geom="text")
+dune_nmds_spp_plt   <- ordi_plot(dune_nmds, layers="species", geom="text")
+
+# Use multi_plot to display side by side
+multi_plot(dune_nmds_sites_plt, dune_nmds_spp_plt, cols=2)
+```
+
+Comparing between plots makes it easier to understand relationships. For example from these plots I can see that the species Elymrepe and Cirsarve are probably most common at site 1. Species Airaprae, Empenigr and Hyporadi are probably commonly found together. They are particularly characteristic of sites 17 and 19 which also have high NMDS2 scores.
+
+# Summary
+Unconstrained methods provide useful ways of summarising tables of data from many different biological disciplines. They are worth considering if you have roughly 10 or more columns of data. This is particularly common in genomics and ecological studies, where multiple genes or species may be recorded for each sample or site. Doing lots of separate analyses on each column individually would be too time-consuming. These ordination methods also help you to identify **relationships** between variables, so that you can determine which samples (or sites) and which genes (or species) are most similar to each other.
+
