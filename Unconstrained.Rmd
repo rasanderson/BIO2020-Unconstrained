@@ -19,22 +19,39 @@ knitr::opts_chunk$set(echo = FALSE)
 ## Introduction
 
 ### Where might we have multiple responses?
-All the examples we have looked at so far have only had one response variable, 
-with one or more explanatory variables. However, there can be numerous examples
-where you collect lots of response variables. Examples include:
+Typically in ecology, environmental science and marine biology you have one response
+variable, with one or more explanatory variables. Thus, you might be interested
+in the effects of nutrient runoff from land on the growth of marine macro-algae.
+Your response variable is the cover of macro-algae, and your explanatory the 
+nutrient runoff. You might be interested in the effects of hedgerow management
+on the numbers of nesting song-thrushes. Your response would be "number of nests"
+and your explanatory could be "number of cuts per year". In both these examples
+you could have additional explanatory variables. For example the depth of water
+will also affect the % cover of macro-algae. Which species of plant comprise the
+hedgerow (hawthorn, blackthorn, privet etc.) will also affect birds. The key
+point is that in all these examples you only have **one** response variable.
+
+However, there can be numerous examples where you collect lots of response
+variables. This will often give you response data in the form of a table.
+Examples include:
 
 * plant species x vegetation quadrats
-* gene sequence x isolate number
 * invertebrate species x pitfall traps
-* bacterial operational taxonomic units (OTUs) x sample
+* bird species x transect number
 * benthic species x marine samples
 
 These data will normally be recorded as tables, where each column is an
 **attribute**, and each row is a **sample**. Therefore in the above examples,
-the attributes are species, gene sequences and OTUs, whilst the samples are
-quadrats, isolates, pitfall traps etc. Often these tables of data can be quite
-large, for example a typical invertebrate survey can easily record 50 or 100
-species within one family, whilst genetic studies can produce hundreds of
+the attributes are species, whilst the samples are quadrats, pitfall traps,
+transect IDs, marine sample code etc. Note that with modern DNA sequencing
+techniques, these tables now apply to genomics data, which are being used more
+widely in biodiversity and environmental studies. Sometimes for some species,
+such as bacteria and fungi, taxonomic names may not be known, and you will see
+them referred to as "operational taxonomic units" or OTUs, but the principles
+remain unchanged.
+
+These tables can be large, for example a typical invertebrate survey can easily
+record 50 or 100 species within one family, whilst genetic studies can produce hundreds of
 sequences. Therefore the resulting tables can produce large numbers of columns
 for the attributes, as well as the rows for samples.
 
@@ -63,8 +80,10 @@ questions such as:
 
 * Which species of plants most frequently co-occur?
 * Which isolates are most similar in terms of their genetic composition?
-* Which bacterial genes are associated with antibiotic resistance?
-* Which quadrats have few species in common?
+* Which quadrats have few plant species in common?
+* Which woodlands have the most similar bird communities?
+* Which mammals are rarely found together?
+* Which species of butterflies and plants co-occur?
 
 In the past scientists used simple metrics to try and understand these types of
 datasets. For example, species richness, which is the number of species that
@@ -78,7 +97,7 @@ of these individual attributes:
 * you might have two quadrats with the same Shannon diversity but few species
 in common
 * you might have two isolates with similar Simpson diversity, but little overlap
-in the gene sequences
+in the gene sequences or OTUs
 
 ### Displaying similarities between attributes and samples
 A better approach is to use methods that **summarise the composition** of your
@@ -125,6 +144,15 @@ assume that the first column contains row names. You will often want to keep
 row and column names fairly short, so you can display them on the summary graphs
 from your analyses. For example, typically species names are no longer than 8-
 letter codes (4 letters genus, 4 letters species).
+
+### Entering your data
+As your data are typically going to be in the form of a table, you will often
+find it easiest to enter your raw data into Microsoft Excel, with column names
+being your species, and row names your samples. However, this does **not** match
+the generally recommended **tidyverse** methods of storing data. Indeed, an R
+`tibble` does not have rownames, which will cause many multivariate methods to
+fail. Fortunately, you can use the `rownames_to_column()` and `column_to_rownames()`
+functions to account for all circumstances, and you will practice this later.
 
 ### Dune dataset
 We are going to analyse some vegetation data from the Netherlands, which is
