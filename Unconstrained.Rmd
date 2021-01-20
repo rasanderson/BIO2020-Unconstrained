@@ -6,9 +6,9 @@ runtime: shiny_prerendered
 
 ```{r setup, include=FALSE}
 library(learnr)
-#library(mosaic)
+library(mosaic)
 library(vegan)
-#library(bio2020)
+library(bio2020)
 dune <- read.csv("www/dune.csv", row.names=1)
 data(dune.env)
 data(varespec)
