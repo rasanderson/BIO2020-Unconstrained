@@ -8,7 +8,8 @@ runtime: shiny_prerendered
 library(learnr)
 library(mosaic)
 library(vegan)
-library(bio2020)
+#library(bio2020)
+source("nes8010.R")
 dune <- read.csv("www/dune.csv", row.names=1)
 data(dune.env)
 data(varespec)
@@ -595,6 +596,6 @@ ordi_plot(varespec_nmds, layers="species", geom="text")
 ```
 
 NMDS is considered to be the most robust unconstrained ordination method for
-many biologists. See the paper by Minchin (1987) <a href="www/Minchin.pdf" target="_blank">here</a>  The `ordi_nmds()` function in the `bio2020` package is
+many biologists. See the paper by Minchin (1987) <a href="www/Minchin.pdf" target="_blank">here</a>  The `ordi_nmds()` function in the `nes8010.R` script is
  a simple wrapper for `vegan` package's `metaNMDS()` function. It combines
 all of Minchin's recommendations into a single command.
