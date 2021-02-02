@@ -1148,24 +1148,24 @@ anova3 <- function(lm_mod, ...){
 ##'
 ##' ord <- metaMDS(dune)
 ##' head(fortify(ord))
-`fortify.metaMDS` <- function(model, data, display="sites",...) {
-  samp <- scores(model, display = display)
-  spp <- tryCatch(scores(model, display = "species"),
-                  error = function(c) {NULL})
-  print(spp)
-  if (!is.null(spp)) {
-    df <- rbind(samp, spp)
-    df <- as.data.frame(df)
-    df <- cbind(Score = factor(rep(c("sites","species"),
-                                   c(nrow(samp), nrow(spp)))),
-                Label = c(rownames(samp), rownames(spp)),
-                df)
-  } else {
-    df <- data.frame(Score = factor(rep("sites", nrow(df))),
-                     Label = rownames(samp),
-                     samp)
-  }
-  rownames(df) <- NULL
-  df
-}
+# `fortify.metaMDS` <- function(model, data, display="sites",...) {
+#   samp <- scores(model, display = display)
+#   spp <- tryCatch(scores(model, display = "species"),
+#                   error = function(c) {NULL})
+#   print(spp)
+#   if (!is.null(spp)) {
+#     df <- rbind(samp, spp)
+#     df <- as.data.frame(df)
+#     df <- cbind(Score = factor(rep(c("sites","species"),
+#                                    c(nrow(samp), nrow(spp)))),
+#                 Label = c(rownames(samp), rownames(spp)),
+#                 df)
+#   } else {
+#     df <- data.frame(Score = factor(rep("sites", nrow(df))),
+#                      Label = rownames(samp),
+#                      samp)
+#   }
+#   rownames(df) <- NULL
+#   df
+# }
 
