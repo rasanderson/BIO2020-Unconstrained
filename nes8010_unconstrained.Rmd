@@ -1,11 +1,11 @@
 ---
 title: "NES8010 Quantitative Ecological Research Methods"
 author: "Introduction to multivariate analysis of ecological data"
-#author: "Roy Sanderson"
-#date: "November 6, 2017"
 output:
-   word_document:
-       reference_docx: template.docx
+  html_document:
+    df_print: paged
+  word_document:
+    reference_docx: template.docx
 ---
 
 ```{r setup, include=FALSE}
@@ -36,6 +36,8 @@ Whilst you could analyse each species or each soil chemical variable separately,
 
 ## Before you begin
 As usual, start RStudio, then create a new R Project in an empty folder. Projects have the advantage of keeping all your data files, R scripts, output graphs etc. in one place, making it easier to reproduce your research. After creating a new R Project, please create a new R Script (click on the main menu, File -> New File... -> R Script). You are recommended to keep a record of the R commands in your R script. Remember to break up your script using blank lines, and comments # so that you can easily understand it. Putting three hash symbols ### at the end of a line creates a table of contents in RStudio making it very simple to navigate your code.
+
+**Note** There are two multivariate practical workshop exercises, and you will probably find it easiest to create a single project folder for both workshops.
 
 ## The vegan library
 To install the add-on vegan library, issue the command:
@@ -135,16 +137,16 @@ ordi_identify(dune_pca_plt) # Hit Esc key to exit
 ```
 
 You can extract individual scores separately; e.g. to extract PC1 site scores
-you can use the `scores()` function, with `choices=1` for just the first axis
+you can use the `$PC1` suffix to just get that axis.
 
 ```{r extract dune PC1}
-dune_pc1 <- scores(dune.pca, display="sites", choices=1)
+dune.sco <- ordi_scores(dune.pca, display="sites")
 ```
 
 This can be compared with some of your explanatory data, for example:
 
 ```{r ggplot boxplot of dune pc1}
-ggplot(dune.env, aes(x=Moisture, y=dune_pc1)) +
+ggplot(dune.env, aes(x=Moisture, y=dune.sco$PC1)) +
    geom_boxplot() +
    xlab("Soil moisture class") +
    ylab("PCA axis 1 scores") +
@@ -267,10 +269,14 @@ library(ggrepel)
 library(ggrepel)
 ```
 
-You will need to extract your ordination scores from your ordination output; here we will again look at the species scores.  Unfortunately the default return from the `scores` command is a matrix and `ggplot` expects a data.frame (data.frames and tibbles are more versatile for plotting)
+You will need to extract your ordination scores from your ordination output; here we will again look at the species scores.  Unfortunately the default return from the `scores` command is a matrix and `ggplot` expects a data.frame (data.frames and tibbles are more versatile for plotting). The `ordi_scores()` function from `nes8010.R` should do the conversion automatically:
 
 ```{r extract spp scores for ggplot}
-dunespp.sco <- data.frame(scores(dune.pca, display="species"))
+# Base R
+# dunespp.sco <- data.frame(scores(dune.pca, display="species"))
+
+# ordi_scores from nes8010.R
+dunespp.sco <- ordi_scores(dune.pca, display="species")
 ```
 
 We can use ggplot in the usual way, building up layer by layer, but take advantage of extra commands provided by `ggrepel` to reduce overlap between labels:
@@ -286,7 +292,7 @@ If this is still too crowded, you can drop the labels for certain species, such 
 
 ```{r dune minus Empenigr, warning=FALSE}
 # Convert into a tibble, changing rownames to a new column SppID
-dunespp.sco <- as_tibble(rownames_to_column(data.frame(dunespp.sco), var="SppID"))
+dunespp.sco <- as_tibble(rownames_to_column(dunespp.sco, var="SppID"))
 
 ggplot(filter(dunespp.sco, SppID != "Empenigr"), aes(x=PC1, y=PC2, label=SppID)) +
    geom_point() +
@@ -321,11 +327,11 @@ __Session -> Set Working Directory -> Choose Directory.__
 and choosing the correct folder.  Then extract the __species__ scores for both PC1 and PC2, and then write them to a CSV file.
 
 ```{r spp scores for pc1 pc2 dune}
-dunespp.sco <- scores(dune.pca, display="species")
+dunespp.sco <- ordi_scores(dune.pca, display="species")
 write.csv(dunespp.sco, "dunespp.csv")  # Use write.csv rather than write_csv
 ```
 
-If you go to your NES8010 folder in File Explorer you should see the file `dunespp.csv` listed; depending on your Microsoft Windows configuration, it might only be listed as `dunespp`.  Double-click on it and by default it will open in Microsoft Excel.  After the data are loaded, you need to insert a chart.
+If you go to your NES8010 folder in File Explorer for this project you should see the file `dunespp.csv` listed; depending on your Microsoft Windows configuration, it might only be listed as `dunespp`.  Double-click on it and by default it will open in Microsoft Excel.  After the data are loaded, you need to insert a chart.
 
 Click on the __Insert__ tab, select __Scatter__ and choose the __More Scatter Charts...__ option as shown below:
 

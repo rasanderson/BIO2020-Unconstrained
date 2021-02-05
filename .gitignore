@@ -3,5 +3,6 @@
 .RData
 .Ruserdata
 *.html
+*.docx
 figure-html
 rsconnect
