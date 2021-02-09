@@ -279,10 +279,10 @@ You will need to extract your ordination scores from your ordination output; her
 dunespp.sco <- ordi_scores(dune.pca, display="species")
 ```
 
-We can use ggplot in the usual way, building up layer by layer, but take advantage of extra commands provided by `ggrepel` to reduce overlap between labels:
+We can use ggplot in the usual way, building up layer by layer, but take advantage of extra commands provided by `ggrepel` to reduce overlap between labels. If you look in your `dunespp.sco` object you will see all the species names (or site names if requested) are in a column called `Label` which you use to label your points:
 
-```{r ggplot and ggrepel of dune.pca}
-ggplot(dunespp.sco, aes(x=PC1, y=PC2, label=rownames(dunespp.sco))) +
+```{r ggplot and ggrepel of dune.pca, warning=FALSE}
+ggplot(dunespp.sco, aes(x=PC1, y=PC2, label=Label)) +
    geom_point() +
    geom_text_repel() +
    theme_classic()
@@ -291,20 +291,18 @@ ggplot(dunespp.sco, aes(x=PC1, y=PC2, label=rownames(dunespp.sco))) +
 If this is still too crowded, you can drop the labels for certain species, such as _Empetrum nigrum_ in the centre of the plot.  You'll find it easier if you convert your PCA scores into a tibble so that you no longer have to refer to `rownames` and can use the `filter` command to filter out any rows you don't want.  The `!=` symbol means "not equal to". Remember that in any ordination diagram, species near the centre of the plot tend to be relatively ubiquitous and found in most samples, whereas those nearer the edge will be of more ecological interest, as they occur in some samples, but not in others.
 
 ```{r dune minus Empenigr, warning=FALSE}
-# Convert into a tibble, changing rownames to a new column SppID
-dunespp.sco <- as_tibble(rownames_to_column(dunespp.sco, var="SppID"))
 
-ggplot(filter(dunespp.sco, SppID != "Empenigr"), aes(x=PC1, y=PC2, label=SppID)) +
+ggplot(filter(dunespp.sco, Label != "Empenigr"), aes(x=PC1, y=PC2, label=Label)) +
    geom_point() +
    geom_text_repel() +
    theme_classic()
 ```
 
-If you wanted to drop both _Empetrum nigrum_ and _Rumex acetosa_ it is usually easiest to have them in a list and precede SppID with `!` (for "NOT") and use the `%in%` operator:
+If you wanted to drop both _Empetrum nigrum_ and _Rumex acetosa_ it is usually easiest to have them in a list and precede Label with `!` (for "NOT") and use the `%in%` operator:
 
 ```{r drop 2 spp from plot, warning=FALSE}
-ggplot(filter(dunespp.sco, !SppID %in% c("Empenigr", "Rumeacet")),
-       aes(x=PC1, y=PC2, label=SppID)) +
+ggplot(filter(dunespp.sco, !Label %in% c("Empenigr", "Rumeacet")),
+       aes(x=PC1, y=PC2, label=Label)) +
    geom_point() +
    geom_text_repel() +
    theme_classic()
