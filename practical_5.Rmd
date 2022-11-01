@@ -1,11 +1,11 @@
 ---
 title: 'Practical 5: Unconstrained Ordination'
-subtitle: "Bio2020 Statistics and experimental design"
+subtitle: "BIO2020 Statistics and experimental design"
 output:
-  html_document: default
-  pdf_document: default
   word_document:
      reference_docx: template.docx
+  pdf_document: 
+  html_document: default
 ---
 
 
@@ -266,7 +266,7 @@ dune_plt
 ordi_identify(dune_plt)
 ```
 
-If you have time, try plotting CA1 vs CA2 using `axes = c(1,3)` as an option to `ordi_plot()`.
+If you have time, try plotting axes 1 and 3, CA1 vs CA3, using `axes = c(1,3)` as an option to `ordi_plot()`.
 
 # 3. Non-metric Multidimensional Scaling 
 ## 3.1 NMDS background and analysis
