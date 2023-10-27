@@ -9,7 +9,7 @@ library(learnr)
 library(mosaic)
 library(vegan)
 #library(bio2020)
-source("nes8010.R")
+#source("nes8010.R")
 dune <- read.csv("www/dune.csv", row.names=1)
 data(dune.env)
 data(varespec)
@@ -235,23 +235,30 @@ data are extremely messy and difficult to interpret by PCA or CA.
 Let's analyse the dune data with PCA. The `vegan` package provides access to many
 advanced multivariate methods. It has the `rda()` function, which when used with
 only a response variable provides PCA, and if used with both response and
-explanatory variables it automatically uses constrained analysis. This can be a 
-little confusing for beginners, so in the `nes8010.R` script is a wrapper
-function called `ordi_pca()` to make it clearer when you are using PCA. Remember
+explanatory variables it automatically uses constrained analysis. Remember
 that in both constrained and unconstrained analyses the "response variable" is
-actually your `data.frame` containing lots of variables. The `summary()` function
+actually your `data.frame` containing lots of variables, typically spp x sites. The `summary()` function
 on your ordination output produces lots of output (most of which you do not need
 to study), so for this website I'm going to limit amount of output. When you run
 it interactively in RStudio, you'll have to scroll up a bit to see the next few lines.
 
 
-```{r dune_pca, echo=TRUE}
+```{r dune_pca, echo=FALSE, eval=TRUE}
 # Undertake the PCA ordination
-dune_pca <- ordi_pca(dune)
+dune_pca <- rda(dune)
 
 # First part of summary: importance of derived variables
 summary(dune_pca)[["cont"]][["importance"]]
 ```
+
+```{r dune_pca2, echo=TRUE, eval=FALSE}
+# Undertake the PCA ordination
+dune_pca <- rda(dune)
+
+# First part of summary: importance of derived variables
+summary(dune_pca)
+```
+
 
 Creating the PCA is very simple. In a PCA you try to "squash" as much of the
 variability in your data into new derived variables, known as **ordination axes**
@@ -295,20 +302,14 @@ graphs show them separately. By default `ggplot2` will autoscale the x- and y-ax
 but to compare the plots it is useful to set the limits manually.
 
 ```{r plot_dune, echo=TRUE}
-# Display both on the same plot
-ordi_plot(dune_pca, geom="text")
+# Display site scores
+plot(dune_pca, type = "n")  # set up a blank canvas
+text(dune_pca, display="sites", cex = 0.7)
 
 # Display quadrat PCA scores for axes 1 and 2
-ordi_plot(dune_pca, layers="sites", geom="text") + 
-  ggtitle("PC1 and PC2 of dune data (quadrat numbers)") +
-  xlim(-2, 2.85) +
-  ylim(-2.4, 2.2)
+plot(dune_pca, type = "n") 
+text(dune_pca, display="species", cex = 0.7)
 
-# Display plant species PCA scores for axes 1 and 2
-ordi_plot(dune_pca, layers="species", geom="text") +
-  ggtitle("PC1 and PC2 of dune data showing species codes") +
-  xlim(-2, 2.85) +
-  ylim(-2.4, 2.2)
 ```
 
 Note that in the above code, for the two separate plots we've added a title using
