@@ -65,9 +65,15 @@ If you receive an error saying that `nes8010.R` cannot be found, check your R
 Project folder contains the file using File Explorer (Windows) or using Finder
 (Mac). You may want to check what RStudio thinks it is using as its folder by
 issuing `getwd()` in the Console window. **Note**: you will need to issue these
-three lines to activate the `vegan`, `ggplot2` and `nes8010` commands. The
-`nes8010.R` file contains various functions to make it easier to use R for
-multi-species analysis, and produce `ggplot2`-compatible graphs.
+three lines to activate the `vegan`, `ggplot2` and `nes8010` commands.
+
+#### What is in the `nes8010.R` script?
+The`nes8010.R` file contains various functions to make it easier to use R for
+multi-species analysis, and produce `ggplot2`-compatible graphs. The website 
+shows you the "base R" equivalent commands which are a little trickier to use.
+There is a new `ggvegan` package under development which you are free to try,
+but it is unstable and so its installation can cause problems. See
+[https://github.com/gavinsimpson/ggvegan](https://github.com/gavinsimpson/ggvegan) for more details.
 
 ## Datasets
 We will look at some community ecology data, of vegetation cover.  The example we will work with has been widely described in a large number of publications over the last 20 years, and is from a sand dune vegetation survey.  Potential explanatory data includes basic soil and management conditions.  We will also use some data collected along the causeway at St Mary's Lighthouse, but using a multivariate rather than univariate approach. Today's dataset comprises a table of sites (samples or quadrats) by species.  You may see these described as "samples" by "attributes", because multivariate techniques are not restricted only to species data.  Attributes might be biochemical composition of medicinal plants, pollution data from an environmental survey etc.  The techniques available will work with any complex "messy" multi-attribute data.
@@ -106,7 +112,7 @@ using the extra plotting functions in `nes8010.R` as these are compatible with
 
 You can plot the samples and attributes on the same graph, or separately:
 
-```{r plots of dune pca}
+```{r plots of dune pca, warning=FALSE}
 ordi_plot(dune.pca)  # Probably too cluttered to see clearly
 ordi_plot(dune.pca, display="sites")
 ordi_plot(dune.pca, display="species")
